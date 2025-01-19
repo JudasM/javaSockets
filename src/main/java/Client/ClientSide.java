@@ -20,43 +20,51 @@ public class ClientSide {
 
         try {
             address = InetAddress.getByName(ipAddress);
-            System.out.println("Server address: "+ address);
+            System.out.println("Server address: " + address);
 
-            //socket
-            socket = new Socket(address,8081);
-            System.out.println("Cumminication cahnnel :" +socket);
+            // Establish socket connection to the server
+            socket = new Socket(address, 8081);
+            System.out.println("Communication channel established: " + socket);
 
-            // reading and writing streams
+            // Initialize input and output streams
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
+            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
-            // data being sent
+            while (true) {
+                // Get message from client user input
+                System.out.print("Enter clientMessage: ");
+                clientMessage = scanner.nextLine();
 
-            System.out.println("Enter clientMessage: ");
-            clientMessage =  scanner.nextLine();
+                // Send message to the server
+                writer.println(clientMessage);
 
-            //writing to server
-            writer.println(clientMessage);
-            if(clientMessage.equalsIgnoreCase("ok")) {
-                System.out.println("Communication terminated");
-                System.exit(1);
+                // Check for termination condition
+                if (clientMessage.equalsIgnoreCase("ok")) {
+                    System.out.println("Communication terminated.");
+                    break;
+                }
+
+                // Read response from the server
+                serverMessage = reader.readLine();
+                if (serverMessage == null) {
+                    System.out.println("Server disconnected.");
+                    break;
+                }
+
+                System.out.println("Message from Server: " + serverMessage);
             }
-
-            //messge from server
-            serverMessage = reader.readLine();
-            System.out.println("Message from Server: "+serverMessage);
-
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            System.err.println("Unknown host: " + e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
+            System.err.println("Communication error: " + e.getMessage());
+        } finally {
             try {
-                System.out.println("Communication Closing......");
-                socket.close();
+                System.out.println("Closing communication...");
+                if (reader != null) reader.close();
+                if (writer != null) writer.close();
+                if (socket != null) socket.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println("Error while closing resources: " + e.getMessage());
             }
         }
 
