@@ -46,6 +46,5 @@ public class ServerSide {
         }
 
         System.out.println("Server stopped.");
-
     }
 }
