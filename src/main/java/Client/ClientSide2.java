@@ -31,7 +31,7 @@ public class ClientSide2 {
 
             // Main thread to send messages to the server
             while (true) {
-                System.out.println("Client 1 message: ");
+                System.out.println("Client 2 message: ");
                 String message = scanner.nextLine();
                 writer.println(message);
 
